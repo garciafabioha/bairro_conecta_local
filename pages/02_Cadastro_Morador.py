@@ -1,6 +1,8 @@
 import streamlit as st
 
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
+
 from rodape import exibir_rodape
 from auth import gerar_hash_senha
 from database import SessionLocal
@@ -20,6 +22,10 @@ st.caption(
 
 st.markdown("---")
 
+
+# ---------------------------------------------------------
+# BUSCAR BAIRROS ATIVOS
+# ---------------------------------------------------------
 
 with SessionLocal() as db:
     bairros = db.scalars(
@@ -48,6 +54,10 @@ mapa_bairros = {
     for b in bairros
 }
 
+
+# ---------------------------------------------------------
+# FORMULÁRIO
+# ---------------------------------------------------------
 
 with st.form("form_morador"):
 
@@ -96,22 +106,34 @@ with st.form("form_morador"):
     )
 
 
+# ---------------------------------------------------------
+# CADASTRO
+# ---------------------------------------------------------
+
 if cadastrar:
 
     email = email.strip().lower()
 
     if not nome.strip():
-        st.warning("Informe seu nome.")
+
+        st.warning(
+            "Informe seu nome."
+        )
 
     elif not email:
-        st.warning("Informe seu e-mail.")
+
+        st.warning(
+            "Informe seu e-mail."
+        )
 
     elif len(senha) < 6:
+
         st.warning(
             "A senha deve possuir pelo menos 6 caracteres."
         )
 
     elif senha != confirmar_senha:
+
         st.warning(
             "As senhas informadas são diferentes."
         )
@@ -119,7 +141,32 @@ if cadastrar:
     else:
 
         try:
+
             with SessionLocal() as db:
+
+                # -------------------------------------------------
+                # VERIFICA SE O E-MAIL JÁ ESTÁ CADASTRADO
+                # -------------------------------------------------
+
+                morador_existente = db.scalar(
+                    select(Morador).where(
+                        Morador.email == email
+                    )
+                )
+
+                if morador_existente:
+
+                    st.warning(
+                        "⚠️ Já existe um morador cadastrado "
+                        "com este e-mail. Faça login ou utilize "
+                        "outro e-mail."
+                    )
+
+                    st.stop()
+
+                # -------------------------------------------------
+                # NOVO MORADOR
+                # -------------------------------------------------
 
                 morador = Morador(
                     bairro_id=mapa_bairros[bairro_selecionado],
@@ -137,11 +184,27 @@ if cadastrar:
                 db.refresh(morador)
 
             st.success(
-                f"👤 Morador {morador.nome} cadastrado com sucesso!"
+                f"👤 Morador {morador.nome} "
+                "cadastrado com sucesso!"
             )
 
-        except Exception as exc:
-            st.error("Não foi possível cadastrar o morador.")
-            st.exception(exc)
+        except IntegrityError:
+
+            st.warning(
+                "⚠️ Este e-mail já está cadastrado. "
+                "Faça login ou utilize outro e-mail."
+            )
+
+        except Exception:
+
+            st.error(
+                "❌ Não foi possível cadastrar o morador. "
+                "Tente novamente."
+            )
+
+
+# ---------------------------------------------------------
+# RODAPÉ
+# ---------------------------------------------------------
 
 exibir_rodape()

@@ -37,9 +37,10 @@ with st.form("form_mural_comunitario"):
     bairro_id = st.session_state["bairro_id"]
 
     st.info(
-        f"👤 Morador: **{st.session_state['morador_nome']}**  |  "
-        f"🏘️ Bairro: **{st.session_state['bairro_nome']}**"
+        f"👤 Morador: **{st.session_state.get('morador_nome', '')}**  |  "
+        f"🏘️ Bairro: **{st.session_state.get('bairro_nome', '')}**"
     )
+
     categoria = st.selectbox(
         "Categoria",
         [
