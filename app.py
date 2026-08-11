@@ -360,4 +360,3 @@ else:
 
 navegacao.run()
 
-#exibir_rodape()
