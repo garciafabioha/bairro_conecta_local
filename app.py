@@ -360,4 +360,4 @@ else:
 
 navegacao.run()
 
-exibir_rodape()
+#exibir_rodape()
