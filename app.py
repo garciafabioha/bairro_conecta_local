@@ -3,7 +3,6 @@ from sqlalchemy import text
 from rodape import exibir_rodape
 from database import engine
 
-
 # ---------------------------------------------------------
 # CONFIGURAÇÃO GERAL
 # ---------------------------------------------------------
@@ -13,7 +12,6 @@ st.set_page_config(
     page_icon="🏘️",
     layout="wide",
 )
-
 
 # ---------------------------------------------------------
 # FUNÇÃO - TESTAR CONEXÃO COM POSTGRESQL
@@ -204,7 +202,6 @@ def pagina_inicio():
             f"{st.session_state['bairro_id']}"
         )
 
-        exibir_rodape()
 # ---------------------------------------------------------
 # DEFINIÇÃO DAS PÁGINAS DE ACESSO / CADASTRO
 # ---------------------------------------------------------
