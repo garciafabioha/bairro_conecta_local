@@ -2,9 +2,10 @@ import streamlit as st
 import bcrypt
 
 from sqlalchemy import select
+
 from rodape import exibir_rodape
 from database import SessionLocal
-from models import Morador
+from models import Morador, Bairro
 
 
 st.set_page_config(
@@ -13,13 +14,15 @@ st.set_page_config(
     layout="centered",
 )
 
+
 # ---------------------------------------------------------
-# Se já estiver logado, encaminha para o sistema
+# SE JÁ ESTIVER LOGADO, ENCAMINHA PARA O SISTEMA
 # ---------------------------------------------------------
 
 if st.session_state.get("logado"):
     st.switch_page("app.py")
-    
+
+
 # ---------------------------------------------------------
 # TELA
 # ---------------------------------------------------------
@@ -60,16 +63,26 @@ if entrar:
     email = email.strip().lower()
 
     if not email:
-        st.warning("Informe o e-mail.")
+
+        st.warning(
+            "Informe o e-mail."
+        )
 
     elif not senha:
-        st.warning("Informe a senha.")
+
+        st.warning(
+            "Informe a senha."
+        )
 
     else:
 
         try:
 
             with SessionLocal() as db:
+
+                # -------------------------------------------------
+                # BUSCA O MORADOR
+                # -------------------------------------------------
 
                 morador = db.scalar(
                     select(Morador).where(
@@ -97,6 +110,10 @@ if entrar:
 
                 else:
 
+                    # ---------------------------------------------
+                    # CONFERE A SENHA
+                    # ---------------------------------------------
+
                     senha_correta = bcrypt.checkpw(
                         senha.encode("utf-8"),
                         morador.senha_hash.encode("utf-8"),
@@ -110,16 +127,40 @@ if entrar:
 
                     else:
 
-                        # Guarda os dados do usuário logado
+                        # -----------------------------------------
+                        # BUSCA O BAIRRO DO MORADOR
+                        # -----------------------------------------
+
+                        bairro = db.scalar(
+                            select(Bairro).where(
+                                Bairro.id == morador.bairro_id
+                            )
+                        )
+
+                        if bairro is None:
+
+                            st.error(
+                                "Não foi possível identificar o bairro "
+                                "vinculado ao morador."
+                            )
+
+                            st.stop()
+
+                        # -----------------------------------------
+                        # GUARDA OS DADOS NA SESSÃO
+                        # -----------------------------------------
+
                         st.session_state["logado"] = True
 
                         st.session_state["morador_id"] = morador.id
 
-                        st.session_state["bairro_id"] = morador.bairro_id
-
                         st.session_state["morador_nome"] = morador.nome
 
                         st.session_state["morador_email"] = morador.email
+
+                        st.session_state["bairro_id"] = morador.bairro_id
+
+                        st.session_state["bairro_nome"] = bairro.nome
 
                         st.success(
                             f"Bem-vindo, {morador.nome}!"
@@ -134,5 +175,10 @@ if entrar:
             )
 
             st.exception(exc)
+
+
+# ---------------------------------------------------------
+# RODAPÉ
+# ---------------------------------------------------------
 
 exibir_rodape()
