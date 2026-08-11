@@ -1,12 +1,9 @@
 import streamlit as st
 import bcrypt
-
 from sqlalchemy import select
-
 from rodape import exibir_rodape
 from database import SessionLocal
 from models import Morador, Bairro
-
 
 st.set_page_config(
     page_title="Login | Conecta Bairro",
@@ -14,14 +11,12 @@ st.set_page_config(
     layout="centered",
 )
 
-
 # ---------------------------------------------------------
 # SE JÁ ESTIVER LOGADO, ENCAMINHA PARA O SISTEMA
 # ---------------------------------------------------------
 
 if st.session_state.get("logado"):
     st.switch_page("app.py")
-
 
 # ---------------------------------------------------------
 # TELA

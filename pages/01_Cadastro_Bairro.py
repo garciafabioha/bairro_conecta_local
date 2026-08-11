@@ -1,10 +1,8 @@
 import streamlit as st
-
 from sqlalchemy import select
 from rodape import exibir_rodape
 from database import SessionLocal
 from models import Bairro
-
 
 st.set_page_config(
     page_title="Cadastrar Bairro | Conecta Bairro",
@@ -18,7 +16,6 @@ st.caption(
 )
 
 st.markdown("---")
-
 
 with st.form("form_bairro"):
 

@@ -1,13 +1,10 @@
 import streamlit as st
-
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
-
 from rodape import exibir_rodape
 from auth import gerar_hash_senha
 from database import SessionLocal
 from models import Bairro, Morador
-
 
 st.set_page_config(
     page_title="Cadastrar Morador | Conecta Bairro",
@@ -21,7 +18,6 @@ st.caption(
 )
 
 st.markdown("---")
-
 
 # ---------------------------------------------------------
 # BUSCAR BAIRROS ATIVOS
